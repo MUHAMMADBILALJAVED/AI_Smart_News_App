@@ -1,4 +1,3 @@
-// // lib/services/api_service.dart
 
 // import 'dart:convert';
 // import 'package:http/http.dart' as http;
@@ -21,19 +20,54 @@
 //   }
 // }
 
+//import 'dart:convert';
+//import 'package:http/http.dart' as http;
+
+//class ApiService {
+//  static const String jsonUrl = 'https://raw.githubusercontent.com/yousafumer/news-scraper-project/main/all_articles.json';
+
+//  static Future<List<Map<String, dynamic>>> fetchNews() async {
+//    final response = await http.get(Uri.parse(jsonUrl));
+//    if (response.statusCode == 200) {
+//      final List<dynamic> data = json.decode(response.body);
+//      return data.cast<Map<String, dynamic>>();
+//    } else {
+//      throw Exception('Failed to load news from GitHub');
+//    }
+//  }
+//}
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ApiService {
-  static const String jsonUrl = 'https://raw.githubusercontent.com/yousafumer/news-scraper-project/main/all_articles.json';
+class SummarizerAPI {
+  final String token = "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";
 
-  static Future<List<Map<String, dynamic>>> fetchNews() async {
-    final response = await http.get(Uri.parse(jsonUrl));
+  Future<String> generateSummary(String article) async {
+    final url = Uri.parse(
+        "https://api-inference.huggingface.co/models/yousaf23/mt5-base-urdu-summarizer");
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json"
+      },
+      body: jsonEncode({
+        "inputs": article,
+      }),
+    );
+
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.cast<Map<String, dynamic>>();
+      final data = jsonDecode(response.body);
+
+      if (data is List && data.isNotEmpty && data[0]["generated_text"] != null) {
+        return data[0]["generated_text"];
+      } else {
+        return "Error: Summary not generated.";
+      }
     } else {
-      throw Exception('Failed to load news from GitHub');
+      return "API Error: ${response.statusCode}";
     }
   }
 }

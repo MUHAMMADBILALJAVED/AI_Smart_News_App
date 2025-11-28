@@ -1,6 +1,7 @@
 // lib/screens/detail_screen.dart
 import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
+import '../services/api_service.dart';
 
 class DetailScreen extends StatelessWidget {
   final Map<String, dynamic> newsItem;
@@ -10,7 +11,6 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         title: Text(newsItem['source'] ?? 'News Channel'),
         leading: IconButton(
@@ -23,7 +23,7 @@ class DetailScreen extends StatelessWidget {
           IconButton(icon: const Icon(Icons.share), onPressed: () {}),
         ],
       ),
-      
+
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -47,13 +47,13 @@ class DetailScreen extends StatelessWidget {
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 200,
-                      color: Colors.grey.shade300,
-                      child: const Icon(Icons.broken_image),
-                    ),
+                    errorBuilder:
+                        (context, error, stackTrace) => Container(
+                          height: 200,
+                          color: Colors.grey.shade300,
+                          child: const Icon(Icons.broken_image),
+                        ),
                   ),
-                  
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -103,30 +103,31 @@ class DetailScreen extends StatelessWidget {
                 FloatingActionButton(
                   heroTag: 'summaryBtn',
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      barrierColor: Colors.black.withOpacity(0.3),
-                      builder: (context) {
-                        return AlertDialog(
-                          backgroundColor: Colors.white.withOpacity(0.95),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text("خلاصہ", style: TextStyle(fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 8),
-                              // const Text("['summary'] ?? 'خلاصہ دستیاب نہیں')"),
-                              const SizedBox(height: 12),
-                              ElevatedButton.icon(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(Icons.close),
-                                label: const Text("بند کریں"),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
+                    ArticlePage(articleText: '',);
+                    //showDialog(
+                    //context: context,
+                    //barrierColor: Colors.black.withOpacity(0.3),
+                    //builder: (context) {
+                    //return AlertDialog(
+                    //backgroundColor: Colors.white.withOpacity(0.95),
+                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    //content: Column(
+                    //mainAxisSize: MainAxisSize.min,
+                    //children: [
+                    //const Text("خلاصہ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    //const SizedBox(height: 8),
+                    //const Text("['summary'] ?? 'خلاصہ دستیاب نہیں')"),
+                    //const SizedBox(height: 12),
+                    //ElevatedButton.icon(
+                    //onPressed: () => Navigator.pop(context),
+                    //icon: const Icon(Icons.close),
+                    //label: const Text("بند کریں"),
+                    //),
+                    //],
+                    //),
+                    //);
+                    //},
+                    //);
                   },
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -134,8 +135,7 @@ class DetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-          )
-
+          ),
         ],
       ),
 
@@ -166,7 +166,7 @@ class DetailScreen extends StatelessWidget {
       //             child: const Icon(Icons.broken_image),
       //           ),
       //         ),
-              
+
       //       ),
       //       const SizedBox(height: 10),
       //       Text(
@@ -199,6 +199,75 @@ class DetailScreen extends StatelessWidget {
       //     ],
       //   ),
       // ),
+    );
+  }
+}
+
+class ArticlePage extends StatefulWidget {
+  final String articleText;
+  const ArticlePage({super.key, required this.articleText});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _ArticlePageState createState() => _ArticlePageState();
+}
+
+class _ArticlePageState extends State<ArticlePage> {
+  bool loading = false;
+  String summary = "";
+
+  void getSummary() async {
+    setState(() {
+      loading = true;
+    });
+
+    final api = SummarizerAPI();
+    final result = await api.generateSummary(widget.articleText);
+
+    setState(() {
+      summary = result;
+      loading = false;
+    });
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text("Summary"),
+            content: Text(summary),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Article")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Text(widget.articleText, style: TextStyle(fontSize: 16)),
+              ),
+            ),
+            SizedBox(height: 20),
+            loading
+                ? CircularProgressIndicator()
+                : ElevatedButton(
+                  onPressed: getSummary,
+                  child: Text("Generate Summary"),
+                ),
+          ],
+        ),
+      ),
     );
   }
 }
