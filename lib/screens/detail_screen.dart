@@ -1,7 +1,7 @@
 // lib/screens/detail_screen.dart
+import 'package:ai_smart_news_app/services/summarizer_api.dart';
 import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
-import '../services/api_service.dart';
 
 class DetailScreen extends StatelessWidget {
   final Map<String, dynamic> newsItem;
