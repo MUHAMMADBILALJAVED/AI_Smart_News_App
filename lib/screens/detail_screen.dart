@@ -7,6 +7,8 @@ class DetailScreen extends StatelessWidget {
   final Map<String, dynamic> newsItem;
 
   const DetailScreen({super.key, required this.newsItem});
+  
+  bool? get isloading => null;
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +104,59 @@ class DetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 FloatingActionButton(
                   heroTag: 'summaryBtn',
-                  onPressed: () {
-                    ArticlePage(articleText: '',);
+                  child: CircularProgressIndicator(color: Colors.white,),
+                  backgroundColor: AppColors.primary,
+                  onPressed: () async {
+                    showDialog(
+                    context: context,
+                    barrierColor: Colors.black.withOpacity(0.4),
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: const Text(
+                          "خلاصہ",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        content: Text(newsItem['summary'] ?? 'خلاصہ دستیاب نہیں'),
+                        actions: [
+                          TextButton(
+                            child: const Text("بند کریں"),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+                  // onPressed: () {
+                  //   ArticlePage(articleText: '',);
+                  //   showDialog(
+                  //     context: context,
+                  //     barrierColor: Colors.black.withOpacity(0.4),
+                  //     builder: (context) {
+                  //       return AlertDialog( 
+                  //         backgroundColor: Colors.white,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(16),
+                  //         ),
+                  //         title: const Text(
+                  //           "خلاصہ",
+                  //           style: TextStyle(fontWeight: FontWeight.bold),
+                  //         ),
+                  //         content: Text(result),
+                  //         actions: [
+                  //           TextButton(
+                  //             child: const Text("بند کریں"),
+                  //             onPressed: () => Navigator.pop(context),
+                  //           ),
+                  //         ],
+                  //       );
+                  //     },
+                  //   );
+                  // }
                     //showDialog(
                     //context: context,
                     //barrierColor: Colors.black.withOpacity(0.3),
@@ -128,10 +181,6 @@ class DetailScreen extends StatelessWidget {
                     //);
                     //},
                     //);
-                  },
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  child: Icon(Icons.summarize),
                 ),
               ],
             ),
