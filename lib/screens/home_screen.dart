@@ -637,62 +637,205 @@
 //   }
 // }
 
+
+// lib/screens/home_screen.dart
+// Changes Start From Here
+// import 'package:flutter/material.dart';
+// import 'package:ai_smart_news_app/services/api_service.dart';
+// import '../widgets/home_slider.dart';
+// import '../widgets/news_tile.dart';
+
+// class HomeScreen extends StatefulWidget {
+//   const HomeScreen({super.key});
+
+//   @override
+//   State<HomeScreen> createState() => _HomeScreenState();
+// }
+
+// class _HomeScreenState extends State<HomeScreen> {
+//   late Future<List<Map<String, dynamic>>> newsList;
+  
+//   @override
+//   void initState() {
+//     super.initState();
+//     newsList = ApiService.fetchNews();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('AI Smart Press'),
+//         centerTitle: true,
+//       ),
+//       body: FutureBuilder<List<Map<String, dynamic>>>(
+//         future: newsList,
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Center(child: CircularProgressIndicator());
+//           } else if (snapshot.hasError) {
+//             return Center(child: Text('Error: \${snapshot.error}'));
+//           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//             return const Center(child: Text('No news found'));
+//           } else {
+//             final data = snapshot.data!;
+//             return ListView(
+//               padding: const EdgeInsets.all(12),
+//               children: [
+//                 const SizedBox(height: 10),
+//                 HorizontalNewsSlider(newsList: data),
+//                 const SizedBox(height: 20),
+//                 const Text(
+//                   'حالیہ خبریں',
+//                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+//                   textDirection: TextDirection.rtl,
+//                 ),
+//                 const SizedBox(height: 12),
+//                 ...data.map((item) => NewsTile(newsItem: item)).toList(),
+//               ],
+//             );
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }
+// Changes End Here
+
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+// import 'package:ai_smart_news_app/services/api_service.dart';
+// import '../widgets/home_slider.dart';
+// import '../widgets/news_tile.dart';
+
+// class HomeScreen extends StatefulWidget {
+//   const HomeScreen({super.key});
+
+//   @override
+//   State<HomeScreen> createState() => _HomeScreenState();
+// }
+
+// class _HomeScreenState extends State<HomeScreen> {
+//   late Future<List<dynamic>> newsList;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     newsList = ApiService.fetchNews();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: AppBar(
+//         title: const Text("AI Smart Press"),
+//         centerTitle: true,
+//         backgroundColor: Colors.green[800],
+//       ),
+
+//       body: FutureBuilder<List<dynamic>>(
+//         future: newsList,
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           if (snapshot.hasError) {
+//             return Center(
+//               child: Text(
+//                 "Error loading news\n${snapshot.error}",
+//                 textAlign: TextAlign.center,
+//               ),
+//             );
+//           }
+
+//           if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//             return const Center(child: Text("No news available"));
+//           }
+
+//           final data = snapshot.data! as List<Map<String, dynamic>>;
+
+//           return ListView(
+//             children: [
+//               HorizontalNewsSlider(newsList: data),
+//               const SizedBox(height: 12),
+//               ...data.map((item) => NewsTile(newsItem: item)).toList(),
+//             ],
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:ai_smart_news_app/services/api_service.dart';
+import '../services/api_service.dart';
 import '../widgets/home_slider.dart';
 import '../widgets/news_tile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Map<String, dynamic>>> newsList;
-  
+  late Future<List<dynamic>> newsFuture;
+
   @override
   void initState() {
     super.initState();
-    newsList = ApiService.fetchNews();
+    newsFuture = ApiService.loadNews();
+  }
+
+  List<dynamic> _todayOnly(List<dynamic> all) {
+    final now = DateTime.now();
+    return all.where((item) {
+      try {
+        final d = DateTime.parse(item['date'].toString());
+        return d.year == now.year && d.month == now.month && d.day == now.day;
+      } catch (_) {
+        // if parse fails, include by default
+        return false;
+      }
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Smart Press'),
+        title: const Text("AI Smart Press"),
+        backgroundColor: Colors.green[800],
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: newsList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: \${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No news found'));
-          } else {
-            final data = snapshot.data!;
-            return ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                const SizedBox(height: 10),
-                HorizontalNewsSlider(newsList: data),
-                const SizedBox(height: 20),
-                const Text(
-                  'حالیہ خبریں',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  textDirection: TextDirection.rtl,
-                ),
-                const SizedBox(height: 12),
-                ...data.map((item) => NewsTile(newsItem: item)).toList(),
-              ],
-            );
-          }
+      body: FutureBuilder<List<dynamic>>(
+        future: newsFuture,
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+          if (snap.hasError) return Center(child: Text('Error: ${snap.error}'));
+          final data = snap.data ?? [];
+          final today = _todayOnly(data);
+          if (today.isEmpty) return const Center(child: Text("آج کے لیے خبریں موجود نہیں"));
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              HomeSlider(newsList: today),
+              const SizedBox(height: 12),
+              const Text("NEWS", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              ...today.map((item) => NewsTile(newsItem: item)).toList(),
+            ],
+          );
         },
       ),
     );

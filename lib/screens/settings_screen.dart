@@ -62,9 +62,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildIconRow(Icons.bookmark, 'Bookmarks', onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => AddToFav(article: null,),
-                      ),
+                      // MaterialPageRoute(
+                      //   builder: (context) => AddToFav(article: null,),
+                      // ),
                     );
                   }),
                   _buildIconRow(Icons.feedback, 'Send Feedback', onTap: () {

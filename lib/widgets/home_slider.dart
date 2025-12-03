@@ -169,74 +169,127 @@
 //   }
 // }
 // lib/widgets/horizontal_news_slider.dart
+// import 'package:flutter/material.dart';
+// import '../screens/detail_screen.dart';
+
+// class HorizontalNewsSlider extends StatelessWidget {
+//   final List<Map<String, dynamic>> newsList;
+//   const HorizontalNewsSlider({super.key, required this.newsList});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       height: 200,
+//       child: ListView.builder(
+//         scrollDirection: Axis.horizontal,
+//         itemCount: newsList.length,
+//         itemBuilder: (context, index) {
+//           final newsItem = newsList[index];
+//           return GestureDetector(
+//             onTap:
+//                 () => Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => DetailScreen(newsItem: newsItem),
+//                   ),
+//                 ),
+//             child: Container(
+//               width: 300,
+//               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(16),
+//                 image: DecorationImage(
+//                   image: NetworkImage(newsItem['image_url'] ?? ''),
+//                   fit: BoxFit.cover,
+//                 ),
+//               ),
+//               child: Container(
+//                 padding: const EdgeInsets.all(12),
+//                 alignment: Alignment.bottomRight,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(16),
+//                   gradient: LinearGradient(
+//                     begin: Alignment.bottomCenter,
+//                     end: Alignment.topCenter,
+//                     colors: [Colors.black87, Colors.transparent],
+//                   ),
+//                 ),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.end,
+//                   crossAxisAlignment: CrossAxisAlignment.end,
+//                   children: [
+//                     Text(
+//                       newsItem['source'] ?? '',
+//                       style: const TextStyle(color: Colors.white, fontSize: 12),
+//                       textDirection: TextDirection.rtl,
+//                     ),
+//                     const SizedBox(height: 6),
+//                     Text(
+//                       newsItem['title'] ?? 'No Title',
+//                       maxLines: 2,
+//                       overflow: TextOverflow.ellipsis,
+//                       style: const TextStyle(
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.white,
+//                       ),
+//                       textDirection: TextDirection.rtl,
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// lib/widgets/home_slider.dart
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../screens/detail_screen.dart';
 
-class HorizontalNewsSlider extends StatelessWidget {
-  final List<Map<String, dynamic>> newsList;
-  const HorizontalNewsSlider({super.key, required this.newsList});
+class HomeSlider extends StatelessWidget {
+  final List<dynamic> newsList;
+  const HomeSlider({super.key, required this.newsList});
 
   @override
   Widget build(BuildContext context) {
+    if (newsList.isEmpty) return const SizedBox.shrink();
     return SizedBox(
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: newsList.length,
-        itemBuilder: (context, index) {
-          final newsItem = newsList[index];
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        itemBuilder: (_, i) {
+          final item = newsList[i];
           return GestureDetector(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailScreen(newsItem: newsItem),
-                  ),
-                ),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DetailScreen(newsItem: item))),
             child: Container(
-              width: 300,
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              width: 320,
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 image: DecorationImage(
-                  image: NetworkImage(newsItem['image_url'] ?? ''),
+                  image: CachedNetworkImageProvider(item['image'] ?? ''),
                   fit: BoxFit.cover,
                 ),
               ),
               child: Container(
-                padding: const EdgeInsets.all(12),
-                alignment: Alignment.bottomRight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [Colors.black87, Colors.transparent],
-                  ),
+                  gradient: const LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black54, Colors.transparent]),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      newsItem['source'] ?? '',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      textDirection: TextDirection.rtl,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      newsItem['title'] ?? 'No Title',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      textDirection: TextDirection.rtl,
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.all(12),
+                alignment: Alignment.bottomLeft,
+                child: Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(item['channel'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                  const SizedBox(height: 6),
+                  Text(item['title'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ]),
               ),
             ),
           );
