@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class FavoriteService {
+class AddToFav {
   static const String key = "favorite_articles";
 
   static Future<void> addFavorite(Map<String, dynamic> article) async {

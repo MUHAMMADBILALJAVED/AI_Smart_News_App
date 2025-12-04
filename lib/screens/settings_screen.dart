@@ -1,6 +1,6 @@
 // lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
-import 'package:ai_smart_news_app/widgets/add_to_fav.dart';
+
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -60,12 +60,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => isEnglish = val);
                   }),
                   _buildIconRow(Icons.bookmark, 'Bookmarks', onTap: () {
-                    Navigator.push(
-                      context,
-                      // MaterialPageRoute(
-                      //   builder: (context) => AddToFav(article: null,),
-                      // ),
-                    );
+                    // Navigator.push(
+                    //   // context,
+                    //   // MaterialPageRoute(
+                    //   //   // builder: (context) => AddToFav(article: null,),
+                    //   // ),
+                    // );
                   }),
                   _buildIconRow(Icons.feedback, 'Send Feedback', onTap: () {
                     showDialog(
